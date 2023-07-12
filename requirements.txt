@@ -1,2 +1,5 @@
 streamlit_card
 streamlit_extras
+openai
+langchain
+PyPDF2
