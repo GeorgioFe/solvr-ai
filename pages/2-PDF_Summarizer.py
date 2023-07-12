@@ -29,7 +29,8 @@ def pdf_reader(pdf_file):
 
 # Setting up model for text summarization.
 def summarizer(text):
-    llm = OpenAI(openai_api_key='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', temperature=0.9)
+    openai_api_key = st.secrets['openai_api_key']
+    llm = OpenAI(openai_api_key=openai_api_key, temperature=0.9)
     template = "You are a master in summarizing long texts. Summarize the following:\n{text}"
     prompt = PromptTemplate.from_template(template)
     chain = LLMChain(llm=llm, prompt=prompt)
