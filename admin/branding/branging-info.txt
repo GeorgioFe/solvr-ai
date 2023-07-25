@@ -1,0 +1,2 @@
+Font Used: Plus Jakarta Sans
+Colors: Primary (pinkish orange) = #FF4B4B. Secondary (dark grey) = #262730
