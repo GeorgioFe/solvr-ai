@@ -1,5 +1,6 @@
 # UI Dependencies.
 import streamlit as st
+from PIL import Image
 
 # Logic Dependencies.
 from langchain.llms import OpenAI
@@ -7,11 +8,13 @@ from langchain import PromptTemplate
 from langchain.chains import LLMChain
 from PyPDF2 import PdfReader
 
+# Page Configuration.
+favicon = Image.open("./admin/branding/logos/favicon-32x32.png")
 st.set_page_config(
     page_title="Solvr.ai - PDF Summarizer",
-    page_icon="📄",
+    page_icon=favicon,
     layout="wide",
-    initial_sidebar_state="auto"
+    initial_sidebar_state="collapsed"
 )
 
 # Logic

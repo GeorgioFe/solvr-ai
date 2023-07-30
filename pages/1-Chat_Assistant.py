@@ -1,14 +1,17 @@
 # UI Dependencies.
 import streamlit as st
+from PIL import Image
 
 # Logic Dependencies.
 import openai
 
+# Page Configuration.
+favicon = Image.open("./admin/branding/logos/favicon-32x32.png")
 st.set_page_config(
     page_title="Solvr.ai - Chat Assistant",
-    page_icon="🤖",
+    page_icon=favicon,
     layout="wide",
-    initial_sidebar_state="auto"
+    initial_sidebar_state="collapsed"
 )
 
 st.markdown("<h1 style='text-align: center;'>Chat Assistant 🤖</h1>", unsafe_allow_html=True)
