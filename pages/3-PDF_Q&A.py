@@ -40,7 +40,7 @@ def document_loader(file):
 
     return docs
 
-# Setting up model for question answering.
+# Setting up chain for question answering.
 def chain_setup():
     OPENAI_API_KEY = st.secrets["openai_api_key"]
     llm = OpenAI(openai_api_key=OPENAI_API_KEY)

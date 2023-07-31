@@ -4,9 +4,10 @@ from PIL import Image
 
 # Logic Dependencies.
 from langchain.llms import OpenAI
-from langchain import PromptTemplate
-from langchain.chains import LLMChain
-from PyPDF2 import PdfReader
+from langchain.document_loaders import PyPDFLoader
+from langchain.chains.summarize import load_summarize_chain
+import tempfile
+import os
 
 # Page Configuration.
 favicon = Image.open("./admin/branding/logos/favicon-32x32.png")
@@ -18,28 +19,42 @@ st.set_page_config(
 )
 
 # Logic
-# PDF Reader (Text Extractor).
-def pdf_reader(pdf_file):
-    reader = PdfReader(pdf_file)
-    allPages = []
+# Convert file-like object to a temporary file path.
+def create_temp_file(file_like_object):
+    # Step 1: Create a temporary file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file_path = temp_file.name
 
-    for i in range(len(reader.pages)):
-        allPages.append(reader.pages[i].extract_text())
+        # Step 2: Write the contents of the file-like object to the temporary file
+        with open(temp_file_path, 'wb') as temp_file_writer:
+            temp_file_writer.write(file_like_object.read())
 
-    allPages = ' '.join(allPages)
+    # Step 3: Return the path to the temporary file
+    return temp_file_path
 
-    return allPages
+# Loads and processes the document to be used by the chain.
+def document_loader(file):
+    file_path = create_temp_file(file)
+    loader = PyPDFLoader(file_path)
+    docs = loader.load()
 
-# Setting up model for text summarization.
-def summarizer(text):
-    openai_api_key = st.secrets['openai_api_key']
-    llm = OpenAI(openai_api_key=openai_api_key, temperature=0.9)
-    template = "You are a master in summarizing long texts. Summarize the following:\n{text}"
-    prompt = PromptTemplate.from_template(template)
-    chain = LLMChain(llm=llm, prompt=prompt)
-    summary = chain.run(text)
+    return docs
 
-    return summary
+# Setting up chain for summarizing.
+def chain_setup():
+    OPENAI_API_KEY = st.secrets["openai_api_key"]
+    llm = OpenAI(openai_api_key=OPENAI_API_KEY)
+    chain = load_summarize_chain(llm=llm, chain_type="refine", verbose=False)
+
+    return chain
+
+# Gets summary.
+def get_summary(document):
+    chain = chain_setup()
+    docs = document_loader(document)
+    answer = chain.run(docs[:])
+
+    return answer
 
 # UI
 st.markdown("<h1 style='text-align: center;'>PDF Summarizer 📄</h1>", unsafe_allow_html=True)
@@ -48,7 +63,6 @@ if uploaded_file is not None:
     if st.button('Summmarize!'):
         with st.chat_message("assistant"):
             with st.spinner('Summarizing PDF...'):
-                text = pdf_reader(uploaded_file)
-                summary = summarizer(text)
+                summary = get_summary(uploaded_file)
             st.write("Here is the summary of the provided PDF!")
             st.markdown(summary)
