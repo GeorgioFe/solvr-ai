@@ -1,3 +1,8 @@
+'''
+Author: Georgio Feghali
+Date: July 11 2023
+'''
+
 # UI Dependencies
 import streamlit as st
 from PIL import Image
